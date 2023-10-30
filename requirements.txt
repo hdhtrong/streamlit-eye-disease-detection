@@ -1,0 +1,9 @@
+streamlit==1.26.0
+torch
+ultralytics==8.0.183
+numpy
+opencv-python-headless==4.8.0.76
+Pillow==9.5.0
+scipy==1.11.1
+filterpy==1.4.5
+matplotlib==3.7.3

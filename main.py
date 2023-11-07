@@ -79,6 +79,7 @@ with st.container():
             )
 
 # --- PREDICTION SECTION ---
+detectedDisease = False;
 with st.container():
     st.subheader("Upload your own image to diagnose")
     uploaded_file = st.file_uploader("Choose a file", accept_multiple_files=False, type=["png", "jpg", "jpeg", "heic", "heif"])
@@ -114,16 +115,16 @@ with st.container():
 
             st.header("Uploaded Image")
             st.image(image, width=400)
-            results = model.predict(image)
+            results = model.predict(image, conf = 0.5)
             result = results[0]
-            st.write(f'Result: {len(results[0].boxes)} diseases detected')
             st.header("Predictions Result")
             result_plotted = result.plot()
             st.image(result_plotted,
                         caption='Detected result',
                         channels="BGR",
-                        use_column_width=True,
-                        width=250)
+                        use_column_width=False,
+                        width=400)
+            count = 0
             for box in result.boxes:
                 class_id = result.names[box.cls[0].item()]
                 cords = box.xyxy[0].tolist()
@@ -132,7 +133,19 @@ with st.container():
                 percentage_conf = f"{conf * 100:.0f}%"
                 st.text(f"Disease: {class_id}")
                 st.text(f"Confidence: {percentage_conf}")
+                if class_id != "Normal" and class_id != "Normal_eyes" :
+                    detectedDisease = True
+                    count = count + 1
                 st.divider()
+            if detectedDisease:
+                st.subheader(f'Result: {count} diseases detected')
+            else:
+                st.subheader(f'Result: no diseases detected')
+if detectedDisease:
+    with st.container():
+        st.write("---")
+        st.subheader(f'Suggested Actions')
 
 with st.container():
+    st.write("---")
     st.image('./logo/iu-scse-logo.png', width=700)
